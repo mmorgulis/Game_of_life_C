@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include "raylib.h"
 
-void gridViewDraw(const GridView* gridView) {
+void drawGridView(const GridView* gridView) {
 	int screenW = GetScreenWidth();
 	int screenH = GetScreenHeight();
 	int cellSize = (int) gridView->cellSize * gridView->zoom;
@@ -19,7 +19,8 @@ void gridViewDraw(const GridView* gridView) {
 	
 }
 
-void cellDraw(int cellX, int cellY, const GridView* gridview) {
+void drawCell(int cellX, int cellY, const GridView* gridview) {
+	TraceLog(LOG_INFO, "DrawCell");
 	int size = gridview->zoom * gridview->cellSize;
 
 	int screenX = gridview->shiftX + cellX * size;

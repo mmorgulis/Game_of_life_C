@@ -1,6 +1,5 @@
 #include "gridView.h"
 #include "life.h"
-#include "gameGui.h"
 #include <stdbool.h>
 #include <raylib.h>
 
@@ -12,7 +11,7 @@ int main(void)
 	const unsigned int cellSize = 8; // default
 	const unsigned int zoomLevels[] = {1, 2, 4, 8};
 	const unsigned int zoomCount = sizeof(zoomLevels) / sizeof(zoomLevels[0]);
-	unsigned int currentZoomIndex = 1; // parto da zoom =zoom = 22
+	unsigned int currentZoomIndex = 1; // parto da zoom = 2
 	GridView gridView = {cellSize, 0 , 0, zoomLevels[currentZoomIndex]};
 	
 	World world = { 0 };
@@ -20,20 +19,20 @@ int main(void)
 	world.gameSettings.speed = 1;
 	SetTargetFPS(world.gameSettings.speed * 10); // 1 speed
 
-	unsigned int population = 5;
 	unsigned int generation = 0;
 
 	// Starting pattern
-	createNewCell(&world, 15, 15);
+	addChunk(&world.chunkTable, 0, 0);
 	createNewCell(&world, 14, 15);
 	createNewCell(&world, 15, 14);
+	createNewCell(&world, 15, 15);
 	createNewCell(&world, 15, 16);
 	createNewCell(&world, 16, 16);
 
 	while (!WindowShouldClose())
 	{	
 		// Speed Button
-		int width = GetScreenWidth();
+		int width = (int) GetScreenWidth();
 		Rectangle speedDownBtn = { width - 50, 10, 25, 25 };
 		Rectangle speedUpBtn = { width - 50, 39, 25, 25 };
 
@@ -44,7 +43,7 @@ int main(void)
 			gridView.shiftY += (int) delta.y;
 		}
 
-		int scroll = GetMouseWheelMove();
+		int scroll = (int) GetMouseWheelMove();
 		if (scroll > 0 && currentZoomIndex < zoomCount - 1) {
 			currentZoomIndex++;
 			gridView.zoom = zoomLevels[currentZoomIndex];
@@ -75,21 +74,26 @@ int main(void)
 			}
 		}
 
-		
+		if (IsKeyPressed(KEY_SPACE)) {
+			world.gameSettings.paused = !world.gameSettings.paused;
+		}
 
 		DrawRectangleRec(speedDownBtn, GREEN);
-		DrawText("-", speedDownBtn.x + 7, speedDownBtn.y, 30, WHITE);
+		DrawText("-", (int) speedDownBtn.x + 7, (int) speedDownBtn.y, 30, WHITE);
 
 		DrawRectangleRec(speedUpBtn, GREEN);
-		DrawText("+", speedUpBtn.x + 5, speedUpBtn.y, 30, WHITE);
+		DrawText("+", (int) speedUpBtn.x + 5, (int) speedUpBtn.y, 30, WHITE);
 		
+		if (!world.gameSettings.paused) {
+			updateWorld(&world);
+			generation++;
+		}
 
 		BeginDrawing();
 		ClearBackground(BLACK);
-		gridViewDraw(&gridView);
-		//cellEvolution(); // internally calls updateChunks
+		drawGridView(&gridView);
 		drawChunks(&world, &gridView);
-		DrawText(TextFormat("Population : %d", population), 15, 15, 19, GREEN);
+		DrawText(TextFormat("Population : %d", world.cellCounter), 15, 15, 19, GREEN);
 		DrawText(TextFormat("Generation : %d", generation), 15, 46, 19, GREEN);
 		EndDrawing();
 	}
