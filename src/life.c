@@ -173,7 +173,6 @@ void updateWorld(World* world)
 
 
 void drawChunks(World* world, const GridView* gridView) {
-	//TraceLog(LOG_INFO, "DrawChunks");
 	ChunkEntry* entry = NULL;
 	for (entry = world->chunkTable; entry != NULL; entry = entry->hh.next) {
 		Chunk* chunk = &entry->chunk;
@@ -187,7 +186,7 @@ void drawChunks(World* world, const GridView* gridView) {
 					int cellX = baseX + x;
 					int cellY = baseY + y;
 					drawCell(cellX, cellY, gridView);
-					TraceLog(LOG_INFO, "Cella %d %d", cellX, cellY);
+					//TraceLog(LOG_INFO, "Cella %d %d", cellX, cellY);
 				}
 			}
 		}

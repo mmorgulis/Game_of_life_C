@@ -97,7 +97,8 @@ int main(void)
 		DrawText(TextFormat("Generation : %d", generation), 15, 46, 19, GREEN);
 		EndDrawing();
 	}
-
+	
+	resetWorld(&world);
 	CloseWindow();
 
 	return 0;

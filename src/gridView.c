@@ -20,7 +20,6 @@ void drawGridView(const GridView* gridView) {
 }
 
 void drawCell(int cellX, int cellY, const GridView* gridview) {
-	TraceLog(LOG_INFO, "DrawCell");
 	int size = gridview->zoom * gridview->cellSize;
 
 	int screenX = gridview->shiftX + cellX * size;
