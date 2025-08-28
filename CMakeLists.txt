@@ -29,6 +29,18 @@ set(PROJ_FILES
 
 # Our Project
 add_executable(${PROJECT_NAME} ${PROJ_FILES})
+
+# Installing
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+install(FILES ${CMAKE_SOURCE_DIR}/resources/PressStart2P-Regular.ttf DESTINATION bin/resources)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/resources/PressStart2P-Regular.ttf
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
+)
+
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
 

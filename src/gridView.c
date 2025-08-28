@@ -26,5 +26,4 @@ void drawCell(int cellX, int cellY, const GridView* gridview) {
 	int screenY = gridview->shiftY + cellY * size;
 
 	DrawRectangle(screenX, screenY, size, size, GREEN);
-	//TraceLog(LOG_INFO, "ScreenX/Y %d %d", screenX, screenY);
 }

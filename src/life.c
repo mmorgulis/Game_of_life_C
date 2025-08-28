@@ -46,38 +46,36 @@ Chunk* addChunk(ChunkEntry** table, int coordX, int coordY) {
 	return &newEntry->chunk;
 }
 
-void deleteChunk(ChunkEntry* table, int coordX, int coordY) {
+void deleteChunk(ChunkEntry** table, int coordX, int coordY) {
 	uint64_t key = computeKey(coordX, coordY);
 
 	ChunkEntry* found = NULL;
-	HASH_FIND(hh, table, &key, sizeof(key), found);
+	HASH_FIND(hh, *table, &key, sizeof(key), found);
 	if(found) {
-		HASH_DEL(table, found);
+		HASH_DEL(*table, found);
 		free(found);
 		found = NULL;
 	}
 
 }
 
-static inline void deleteAllChunks(ChunkEntry* table) {
-	if (!table) return;
+static inline void deleteAllChunks(ChunkEntry** table) {
+	if (!table || !*table) return;
 
 	ChunkEntry* currentEntry;
 	ChunkEntry* tmp;
 
-	HASH_ITER(hh, table, currentEntry, tmp) {
-		HASH_DEL(table, currentEntry);  // delete; users advances to next
+	HASH_ITER(hh, *table, currentEntry, tmp) {
+		HASH_DEL(*table, currentEntry);  // delete; users advances to next
 		free(currentEntry);           
 	}
-
+	*table = NULL;
 }
 
 void resetWorld(World* world)
 {	
-	deleteAllChunks(world->chunkTable);
-	deleteAllChunks(world->nextChunkTable);
-	world->chunkTable = NULL;
-	world->nextChunkTable = NULL;
+	deleteAllChunks(&world->chunkTable);
+	deleteAllChunks(&world->nextChunkTable);
 }
 
 void createNewCell(World* world, int posX, int posY) {
@@ -166,7 +164,7 @@ void updateWorld(World* world)
 	}
 
 	// Replace current chunkTable with nextChunkTable
-	deleteAllChunks(world->chunkTable);
+	deleteAllChunks(&world->chunkTable);
 	world->chunkTable = world->nextChunkTable;
 	world->nextChunkTable = NULL;
 }

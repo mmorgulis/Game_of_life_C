@@ -10,6 +10,7 @@
 
 typedef struct game {
 	unsigned int speed; // 1 to 10
+	bool gameStarter;
 	bool paused;
 } GameSettings;
 
@@ -47,7 +48,7 @@ Chunk* addChunk(ChunkEntry** table, int coordX, int coordY);
 
 Chunk* findChunk(ChunkEntry* table, uint64_t key);
 
-void deleteChunk(ChunkEntry* table, int coordX, int coordY);
+void deleteChunk(ChunkEntry** table, int coordX, int coordY);
 
 void resetWorld(World* world);
 
