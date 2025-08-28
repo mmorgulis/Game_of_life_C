@@ -41,9 +41,18 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
 )
 
-#set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
-#target_include_directories(Game_of_life PRIVATE ${raylib_SOURCE_DIR}/src)
+
+# Solves some linux problem 
+if (UNIX AND NOT APPLE)
+    target_link_libraries(${PROJECT_NAME}
+        m
+        pthread
+        dl
+        rt
+        X11
+    )
+endif()
 
 # Assure that platform is defined
 if(NOT DEFINED PLATFORM)

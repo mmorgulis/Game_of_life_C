@@ -1,6 +1,7 @@
 # Game_of_life_C
 This program is a C implementation of **Game of Life**, using **raylib** to build the GUI.
 The main window looks like this:
+
 ![Alt text](img/game_of_life.png)
 
 You can interact with the GUI using the mouse and keyboard:  
@@ -23,8 +24,9 @@ Linux:
 ```
 mkdir build
 cmake -S . -B build
+cd build
 make
-Optional: make install
+Optional: (sudo) make install
 ```
 Windows:
 ```
