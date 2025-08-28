@@ -43,6 +43,12 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
+#target_include_directories(Game_of_life PRIVATE ${raylib_SOURCE_DIR}/src)
+
+# Assure that platform is defined
+if(NOT DEFINED PLATFORM)
+    set(PLATFORM "Desktop")
+endif()
 
 # Web Configurations
 if (${PLATFORM} STREQUAL "Web")
