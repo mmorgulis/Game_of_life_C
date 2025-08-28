@@ -66,7 +66,7 @@ static inline void deleteAllChunks(ChunkEntry** table) {
 	ChunkEntry* tmp;
 
 	HASH_ITER(hh, *table, currentEntry, tmp) {
-		HASH_DEL(*table, currentEntry);  // delete; users advances to next
+		HASH_DEL(*table, currentEntry);
 		free(currentEntry);           
 	}
 	*table = NULL;

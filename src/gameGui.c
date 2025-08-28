@@ -44,7 +44,7 @@ int main(void)
 
 		if (!world.gameSettings.gameStarter) {
 			// If any key is pressed the game starts
-			if (GetKeyPressed() != 0 || IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+			if (GetKeyPressed() != 0 || IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
 				world.gameSettings.gameStarter = true;
 				world.gameSettings.paused = false;
 			}
@@ -52,10 +52,10 @@ int main(void)
 			const char* title = "Conway's Game of Life";
 			const char* instructions[] = {
 				"Press SPACE to pause/resume",
-				"Left Mouse: draw cells (better when paused)",
-				"Right Mouse: pan view",
+				"Left Mouse Click: draw cells",
+				"Right Mouse Click: pan view",
 				"Mouse Wheel: zoom IN and OUT",
-				"+ or - buttons: adjust speed",
+				"Keyboard + or -: adjust speed",
 				"Press ANY KEY to start"
 			};
 
@@ -66,7 +66,7 @@ int main(void)
 			float titleSpacing = 20;
 			float anySpacing = 20;
 
-			// Measuere title
+			// Measure title
 			Vector2 titleMeasure = MeasureTextEx(retroFont, title, titleSize, spacing);
 
 			// Draw title
@@ -74,7 +74,7 @@ int main(void)
 			DrawTextEx(retroFont, title, (Vector2) { titleX, 15 }, titleSize, spacing, GREEN);
 
 			// Middle instructions
-			float startY = 15 + titleMeasure.y + 20; // 
+			float startY = 15 + titleMeasure.y + 20;
 			for (int i = 0; i < 5; i++) {
 				Vector2 textMeasure = MeasureTextEx(retroFont, instructions[i], instructionSize, spacing);
 				float textX = (GetScreenWidth() - textMeasure.x) / 2; // Centrato
@@ -87,11 +87,6 @@ int main(void)
 			DrawTextEx(retroFont, instructions[5], (Vector2) { startX, startY + 5 * 25 + anySpacing}, startSize, spacing, GREEN);
 		}
 		else {
-			// Speed Button
-			int width = GetScreenWidth();
-			Rectangle speedDownBtn = { (float) width - 50.0f, 10.0f, 25.0f, 25.0f };
-			Rectangle speedUpBtn = { width - 50.0f, 39.0f, 25.0f, 25.0f };
-
 			// Input with mouse = panning, zooming and create cells
 			if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
 				Vector2 delta = GetMouseDelta();
@@ -111,34 +106,32 @@ int main(void)
 
 			if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
 				Vector2 position = GetMousePosition();
-
-				if (CheckCollisionPointRec(position, speedDownBtn)) {
-					if (world.gameSettings.speed > 1)
-						world.gameSettings.speed--;
-					SetTargetFPS(world.gameSettings.speed * 10);
-				}
-				else if (CheckCollisionPointRec(position, speedUpBtn)) {
-					if (world.gameSettings.speed < 10)
-						world.gameSettings.speed++;
-					SetTargetFPS(world.gameSettings.speed * 10);
-				}
-				else {
-					int cellX = (int)((position.x - gridView.shiftX) / (gridView.zoom * gridView.cellSize));
-					int cellY = (int)((position.y - gridView.shiftY) / (gridView.zoom * gridView.cellSize));
-
-					createNewCell(&world, cellX, cellY);
-				}
+				int cellX = (int)((position.x - gridView.shiftX) / (gridView.zoom * gridView.cellSize));
+				int cellY = (int)((position.y - gridView.shiftY) / (gridView.zoom * gridView.cellSize));
+				createNewCell(&world, cellX, cellY);
 			}
 
 			if (IsKeyPressed(KEY_SPACE)) {
 				world.gameSettings.paused = !world.gameSettings.paused;
 			}
 
-			DrawRectangleRec(speedDownBtn, GREEN);
-			DrawText("-", (int)speedDownBtn.x + 7, (int)speedDownBtn.y, 30, WHITE);
+			if ((IsKeyPressed(KEY_EQUAL) && (IsKeyDown(KEY_LEFT_SHIFT) 
+				|| IsKeyDown(KEY_RIGHT_SHIFT))) || IsKeyPressed(KEY_KP_ADD)
+				|| IsKeyPressed(KEY_KP_DECIMAL)
+				|| IsKeyPressed(KEY_RIGHT_BRACKET)) {
+				if (world.gameSettings.speed < 10)
+					world.gameSettings.speed++;
+				SetTargetFPS(world.gameSettings.speed * 10);
+			}
 
-			DrawRectangleRec(speedUpBtn, GREEN);
-			DrawText("+", (int)speedUpBtn.x + 5, (int)speedUpBtn.y, 30, WHITE);
+			if (IsKeyPressed(KEY_MINUS) 
+				|| IsKeyPressed(KEY_KP_SUBTRACT)
+				|| IsKeyPressed(KEY_SLASH)
+				|| IsKeyPressed(KEY_APOSTROPHE)) {
+				if (world.gameSettings.speed > 1)
+					world.gameSettings.speed--;
+				SetTargetFPS(world.gameSettings.speed * 10);
+			}
 
 			if (!world.gameSettings.paused) {
 				updateWorld(&world);
@@ -147,13 +140,14 @@ int main(void)
 
 			drawGridView(&gridView);
 			drawChunks(&world, &gridView);
-			DrawText(TextFormat("Population : %d", world.cellCounter), 15, 15, 19, GREEN);
-			DrawText(TextFormat("Generation : %d", generation), 15, 46, 19, GREEN);
+			DrawTextEx(retroFont, TextFormat("Population : %d", world.cellCounter), (Vector2) { 17, 17 }, 15, 1, GREEN);
+			DrawTextEx(retroFont, TextFormat("Generation : %d", generation), (Vector2) { 17, 34 }, 15, 1, GREEN);
 		}
 		EndDrawing();
 	}
 
 	resetWorld(&world);
+	UnloadFont(retroFont);
 	CloseWindow();
 
 	return 0;
